@@ -70,17 +70,17 @@ public class DocumentService {
     // The file's own bytes decide, not the client-sent Content-Type or file name.
     private static byte[] readPdf(MultipartFile file) {
         if (file.isEmpty()) {
-            throw new InvalidDocumentException("The file is empty.");
+            throw new InvalidDocumentException("EMPTY_FILE", "The file is empty.");
         }
         try {
             byte[] bytes = file.getBytes();
             if (bytes.length < PDF_MAGIC.length
                     || !Arrays.equals(Arrays.copyOf(bytes, PDF_MAGIC.length), PDF_MAGIC)) {
-                throw new InvalidDocumentException("Only PDF files are supported.");
+                throw new InvalidDocumentException("NOT_PDF", "Only PDF files are supported.");
             }
             return bytes;
         } catch (IOException e) {
-            throw new InvalidDocumentException("The file could not be read.");
+            throw new InvalidDocumentException("UNREADABLE_FILE", "The file could not be read.");
         }
     }
 
@@ -89,10 +89,10 @@ public class DocumentService {
         try {
             markdown = converter.convert(pdf);
         } catch (IOException e) {
-            throw new InvalidDocumentException("The PDF is damaged or password-protected.");
+            throw new InvalidDocumentException("DAMAGED_PDF", "The PDF is damaged or password-protected.");
         }
         if (markdown.isBlank()) {
-            throw new InvalidDocumentException("The PDF has no text. Scanned documents are not supported yet.");
+            throw new InvalidDocumentException("NO_TEXT", "The PDF has no text. Scanned documents are not supported yet.");
         }
         return markdown;
     }

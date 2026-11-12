@@ -1,4 +1,7 @@
-import { useEffect, useState, type ChangeEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
+import { ApiError, isAbort } from '../api/http'
+import { errorMessage } from '../api/errors'
+import CardsPanel from '../cards/CardsPanel'
 import {
   getDocument,
   listDocuments,
@@ -17,42 +20,88 @@ function chunkWord(n: number) {
 }
 
 export default function DocumentsPage() {
-  const [documents, setDocuments] = useState<DocumentSummary[]>([])
-  const [selected, setSelected] = useState<DocumentDetail | null>(null)
+  const [documents, setDocuments] = useState<DocumentSummary[] | null>(null) // null = not loaded yet
+  const [listError, setListError] = useState<string | null>(null)
+  const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [detail, setDetail] = useState<DocumentDetail | null>(null)
+  const [detailLoading, setDetailLoading] = useState(false)
+  const [detailError, setDetailError] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [status, setStatus] = useState('')
+  const openCtl = useRef<AbortController | null>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const pendingFocus = useRef(false)
+
+  const load = useCallback(
+    () =>
+      listDocuments()
+        .then((d) => {
+          setDocuments(d)
+          setListError(null)
+        })
+        .catch((e) => setListError(errorMessage(e))),
+    [],
+  )
 
   useEffect(() => {
-    listDocuments().then(setDocuments).catch((e: Error) => setError(e.message))
-  }, [])
+    load()
+    return () => openCtl.current?.abort()
+  }, [load])
+
+  // Runs after the detail heading is rendered.
+  useEffect(() => {
+    const h = headingRef.current
+    if (!detail || !h || !pendingFocus.current) return
+    pendingFocus.current = false
+    h.focus({ preventScroll: true })
+    if (window.matchMedia('(max-width: 760px)').matches) {
+      const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      h.scrollIntoView({ block: 'start', behavior: calm ? 'auto' : 'smooth' })
+    }
+  }, [detail])
 
   async function onFileChosen(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     e.target.value = '' // allow choosing the same file again
     if (!file) return
     if (file.size > MAX_UPLOAD_BYTES) {
-      setError('Datoteka je veća od 10 MB.')
+      setError(errorMessage(new ApiError('FILE_TOO_LARGE', 413, '')))
       return
     }
     setError(null)
     setUploading(true)
+    setStatus(`Obrađujem „${file.name}“…`)
     try {
       const created = await uploadDocument(file)
-      setDocuments(await listDocuments())
+      await load()
+      setStatus(`Učitano: ${file.name} (${created.chunkCount} ${chunkWord(created.chunkCount)})`)
       await open(created.id)
     } catch (err) {
-      setError((err as Error).message)
+      setStatus('')
+      setError(errorMessage(err))
     } finally {
       setUploading(false)
     }
   }
 
   async function open(id: number) {
-    setError(null)
+    openCtl.current?.abort()
+    const ctl = new AbortController()
+    openCtl.current = ctl
+    setSelectedId(id)
+    setDetail(null)
+    setDetailError(null)
+    setDetailLoading(true)
     try {
-      setSelected(await getDocument(id))
+      const d = await getDocument(id, ctl.signal)
+      pendingFocus.current = true
+      setDetail(d)
+      setDetailLoading(false)
     } catch (err) {
-      setError((err as Error).message)
+      if (isAbort(err)) return // a newer open() owns the state now
+      setDetailError(errorMessage(err))
+      setDetailLoading(false)
     }
   }
 
@@ -62,9 +111,19 @@ export default function DocumentsPage() {
         <h1>Moji materijali</h1>
         <label className={`button ${uploading ? 'is-busy' : ''}`}>
           {uploading ? 'Obrađujem…' : 'Učitaj PDF'}
-          <input type="file" accept="application/pdf,.pdf" onChange={onFileChosen} disabled={uploading} hidden />
+          <input
+            type="file"
+            accept="application/pdf,.pdf"
+            onChange={onFileChosen}
+            disabled={uploading}
+            className="visually-hidden"
+          />
         </label>
       </header>
+
+      <p role="status" className="visually-hidden">
+        {status}
+      </p>
 
       {error && (
         <div className="callout is-error" role="alert">
@@ -76,20 +135,41 @@ export default function DocumentsPage() {
       )}
 
       <div className="layout">
-        <section aria-labelledby="list-title">
+        <section aria-labelledby="list-title" aria-busy={documents === null && !listError}>
           <h2 id="list-title" className="section-title">
             Materijali
           </h2>
-          {documents.length === 0 ? (
+          {listError ? (
+            <>
+              <div className="callout is-error" role="alert">
+                <span className="callout-icon" aria-hidden="true">
+                  ✗
+                </span>
+                <span>{listError}</span>
+              </div>
+              <button
+                type="button"
+                className="button-secondary"
+                onClick={() => {
+                  setListError(null)
+                  load()
+                }}
+              >
+                Pokušaj ponovno
+              </button>
+            </>
+          ) : documents === null ? (
+            <p className="muted">Učitavam materijale…</p>
+          ) : documents.length === 0 ? (
             <p className="empty">Još nema materijala. Učitaj skriptu u PDF-u.</p>
           ) : (
             <ul className="doc-list">
               {documents.map((d) => (
                 <li key={d.id}>
                   <button
-                    className={`doc ${selected?.id === d.id ? 'is-selected' : ''}`}
+                    className={`doc ${selectedId === d.id ? 'is-selected' : ''}`}
                     onClick={() => open(d.id)}
-                    aria-current={selected?.id === d.id}
+                    aria-current={selectedId === d.id}
                   >
                     <span className="doc-name">{d.name}</span>
                     <span className="doc-meta">
@@ -102,13 +182,14 @@ export default function DocumentsPage() {
           )}
         </section>
 
-        <section aria-labelledby="detail-title">
-          {selected ? (
+        <section aria-labelledby="detail-title" aria-busy={detailLoading}>
+          {detail ? (
             <>
-              <h2 id="detail-title" className="section-title">
-                {selected.name}
+              <h2 id="detail-title" className="section-title" tabIndex={-1} ref={headingRef}>
+                {detail.name}
               </h2>
-              {selected.chunks.map((c) => (
+              <CardsPanel documentId={detail.id} />
+              {detail.chunks.map((c) => (
                 <article key={c.id} className="chunk">
                   <h3>{c.heading ?? 'Uvod'}</h3>
                   {/* shortcut: raw Markdown text; render it with react-markdown when the study view is built */}
@@ -116,6 +197,17 @@ export default function DocumentsPage() {
                 </article>
               ))}
             </>
+          ) : detailError ? (
+            <div id="detail-title" className="callout is-error" role="alert">
+              <span className="callout-icon" aria-hidden="true">
+                ✗
+              </span>
+              <span>{detailError}</span>
+            </div>
+          ) : detailLoading ? (
+            <p id="detail-title" className="muted">
+              Učitavam…
+            </p>
           ) : (
             <p id="detail-title" className="muted">
               Odaberi materijal da vidiš njegove cjeline.

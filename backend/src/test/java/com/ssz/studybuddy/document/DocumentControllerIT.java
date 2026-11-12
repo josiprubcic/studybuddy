@@ -63,7 +63,7 @@ class DocumentControllerIT {
         mvc.perform(multipart("/api/documents").file(notPdf))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("$.code").value("INVALID_DOCUMENT"))
+                .andExpect(jsonPath("$.code").value("NOT_PDF"))
                 .andExpect(jsonPath("$.detail").value("Only PDF files are supported."));
     }
 
@@ -71,6 +71,7 @@ class DocumentControllerIT {
     void rejectsAPdfWithoutText() throws Exception {
         mvc.perform(multipart("/api/documents").file(pdf("scan.pdf", emptyPdf())))
                 .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("NO_TEXT"))
                 .andExpect(jsonPath("$.detail", containsString("no text")));
     }
 
