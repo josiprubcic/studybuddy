@@ -66,9 +66,14 @@ export default function DocumentsPage() {
         </label>
       </header>
 
-      <p className="error" role="alert" aria-live="polite">
-        {error}
-      </p>
+      {error && (
+        <div className="callout is-error" role="alert">
+          <span className="callout-icon" aria-hidden="true">
+            ✗
+          </span>
+          <span>{error}</span>
+        </div>
+      )}
 
       <div className="layout">
         <section aria-labelledby="list-title">
@@ -76,7 +81,7 @@ export default function DocumentsPage() {
             Materijali
           </h2>
           {documents.length === 0 ? (
-            <p className="muted">Još nema materijala. Učitaj skriptu u PDF-u.</p>
+            <p className="empty">Još nema materijala. Učitaj skriptu u PDF-u.</p>
           ) : (
             <ul className="doc-list">
               {documents.map((d) => (
@@ -87,7 +92,7 @@ export default function DocumentsPage() {
                     aria-current={selected?.id === d.id}
                   >
                     <span className="doc-name">{d.name}</span>
-                    <span className="muted">
+                    <span className="doc-meta">
                       {d.chunkCount} {chunkWord(d.chunkCount)} · {dateFormat.format(new Date(d.createdAt))}
                     </span>
                   </button>
