@@ -138,26 +138,6 @@ function CardItem({
       ) : (
         <>
           <p className="cards-question"><Question card={card} /></p>
-          <button
-            type="button"
-            className="button-ghost"
-            data-reveal={card.id}
-            aria-expanded={shown}
-            aria-controls={answerId}
-            onClick={() => setShown(!shown)}
-          >
-            {shown ? 'Sakrij odgovor' : 'Prikaži odgovor'}
-          </button>
-          {/* Always in the DOM so aria-controls resolves; the reveal animation replays when `hidden` is removed. */}
-          <div id={answerId} className="cards-answer" hidden={!shown}>
-            <p className="cards-answer-text">{card.answer}</p>
-            {card.quote && (
-              <>
-                <span className="cards-quote-label">Izvor:</span>
-                <blockquote>{card.quote}</blockquote>
-              </>
-            )}
-          </div>
           {mode === 'delete' ? (
             <div className="cards-confirm" role="group" aria-label="Brisanje kartice">
               <p>Obrisati ovu karticu?</p>
@@ -168,11 +148,33 @@ function CardItem({
               </div>
             </div>
           ) : (
-            <div className="cards-actions">
-              <button ref={editBtn} type="button" className="button-ghost" onClick={startEdit}>Uredi</button>
-              <button ref={deleteBtn} type="button" className="button-ghost is-danger" onClick={() => { setError(null); setMode('delete') }}>Obriši</button>
+            <div className="cards-actions cards-row">
+              <button
+                type="button"
+                className="button-ghost"
+                data-reveal={card.id}
+                aria-expanded={shown}
+                aria-controls={answerId}
+                onClick={() => setShown(!shown)}
+              >
+                {shown ? 'Sakrij odgovor' : 'Prikaži odgovor'}
+              </button>
+              <span className="cards-row-end">
+                <button ref={editBtn} type="button" className="button-ghost" onClick={startEdit}>Uredi</button>
+                <button ref={deleteBtn} type="button" className="button-ghost is-danger" onClick={() => { setError(null); setMode('delete') }}>Obriši</button>
+              </span>
             </div>
           )}
+          {/* Always in the DOM so aria-controls resolves; the reveal animation replays when `hidden` is removed. */}
+          <div id={answerId} className="cards-answer" hidden={!shown}>
+            <p className="cards-answer-text">{card.answer}</p>
+            {card.quote && (
+              <>
+                <span className="cards-quote-label">Izvor:</span>
+                <blockquote>{card.quote}</blockquote>
+              </>
+            )}
+          </div>
         </>
       )}
     </li>

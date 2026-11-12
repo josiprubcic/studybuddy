@@ -32,6 +32,12 @@
   --highlight: #fde68a;
   --highlight-text: #1c1917;
 
+  /* Pomodoro tomato — illustration only, never for UI state (red stays reserved for wrong answers) */
+  --tomato: #e5484d;
+  --tomato-skin: #fdecec;
+  --tomato-ring: #c2373c;
+  --tomato-leaf: #2f8f4e;
+
   /* Mastery stages */
   --mastery-new: var(--text-soft);
   --mastery-learning: var(--primary);
@@ -97,6 +103,11 @@
     --motivation: #fde68a;
     --motivation-soft: #78350f;
     --highlight: #fcd34d;
+
+    --tomato: #f0646a;
+    --tomato-skin: #3b2224;
+    --tomato-ring: #f0646a;
+    --tomato-leaf: #4ade80;
 
     --mastery-familiar: #c4b5fd;
     --mastery-familiar-soft: #2e1065;
@@ -192,6 +203,7 @@ mark {
 
 .page-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -351,7 +363,8 @@ mark {
   cursor: pointer;
   transition:
     border-color 150ms ease,
-    background-color 150ms ease;
+    background-color 150ms ease,
+    transform var(--dur-press) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -363,6 +376,10 @@ mark {
 .doc.is-selected {
   border-color: var(--primary);
   background: var(--primary-soft);
+}
+
+.doc:active {
+  transform: scale(0.98);
 }
 
 .doc-name {
@@ -403,11 +420,25 @@ mark {
 }
 
 .chunk-text {
-  margin: 0;
   font-size: 1.0625rem;
   line-height: 1.6;
-  white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+.chunk-text > * {
+  margin: 0;
+}
+
+.chunk-text > * + * {
+  margin-top: 0.75em;
+}
+
+.chunk-text ul {
+  padding-left: 1.25em;
+}
+
+.chunk-text h4 {
+  font: 700 1rem/1.35 var(--font-heading);
 }
 
 @media (prefers-reduced-motion: reduce) {

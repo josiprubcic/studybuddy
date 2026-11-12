@@ -21,6 +21,11 @@ public class CardController {
         return cards.generate(documentId);
     }
 
+    @GetMapping("/cards")
+    public List<CardResponse> listAll() {
+        return cards.listAll();
+    }
+
     @GetMapping("/documents/{documentId}/cards")
     public List<CardResponse> list(@PathVariable Long documentId) {
         return cards.list(documentId);

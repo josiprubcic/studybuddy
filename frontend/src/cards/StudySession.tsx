@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import Icon from '../ui/Icon'
+import { PomodoroMini } from '../focus/PomodoroTimer'
 import type { Card } from './api'
 import './study.css'
 
@@ -144,6 +145,7 @@ export default function StudySession({ cards, onClose }: { cards: Card[]; onClos
           <Icon name="arrowLeft" size={20} />
           Završi
         </button>
+        <PomodoroMini />
         <h2 id={titleId} className="visually-hidden">
           Vježbanje kartica
         </h2>

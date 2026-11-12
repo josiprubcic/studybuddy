@@ -1,0 +1,116 @@
+/* App shell: top bar with wordmark, navigation and the running timer. */
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -64px;
+  z-index: 20;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: var(--primary-text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 8px;
+}
+
+.shell-bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.shell-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 8px 24px;
+}
+
+.shell-wordmark {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font: 800 1.125rem/1 var(--font-heading);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.shell-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 4px;
+}
+
+.shell-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font: 700 0.9375rem/1 var(--font-heading);
+  text-decoration: none;
+  transition: color 150ms ease, background-color 150ms ease;
+}
+
+.shell-link[aria-current='page'] {
+  color: var(--text);
+}
+
+/* the current page: a short ink bar under the label, no motion (navigation happens many times a day) */
+.shell-link[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 4px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--primary);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .shell-link:hover {
+    color: var(--text);
+    background: var(--surface-sunken);
+  }
+}
+
+.shell-timer {
+  margin-left: auto;
+  color: var(--text);
+  text-decoration: none;
+  border-radius: var(--radius-pill);
+}
+
+.shell-timer:empty {
+  display: none;
+}
+
+.shell-main:focus {
+  outline: none;
+}
+
+@media (max-width: 520px) {
+  .shell-inner {
+    gap: 4px 8px;
+  }
+  .shell-wordmark {
+    font-size: 1rem;
+  }
+  .shell-link {
+    padding: 0 8px;
+  }
+}

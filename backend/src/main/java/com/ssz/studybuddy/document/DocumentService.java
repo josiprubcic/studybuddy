@@ -48,7 +48,7 @@ public class DocumentService {
                 chunks.save(new Chunk(document.getId(), i, s.heading(), s.text()));
             }
             return new DocumentSummary(document.getId(), document.getName(), document.getType(),
-                    document.getCreatedAt(), sections.size());
+                    document.getCreatedAt(), sections.size(), 0);
         });
     }
 

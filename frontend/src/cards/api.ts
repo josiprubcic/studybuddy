@@ -11,6 +11,8 @@ export interface Card {
   quote: string
 }
 
+export const listAllCards = (signal?: AbortSignal) => request<Card[]>('/api/cards', { signal })
+
 export const listCards = (documentId: number, signal?: AbortSignal) =>
   request<Card[]>(`/api/documents/${documentId}/cards`, { signal })
 

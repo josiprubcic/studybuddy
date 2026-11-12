@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     // In development the browser only talks to Vite (5173); Vite forwards /api to Spring (8080), so no CORS is needed.
     proxy: {
-      '/api': 'http://localhost:8080',
+      '/api': process.env.API_URL ?? 'http://localhost:8080', // API_URL lets a second backend run side by side
     },
   },
 })

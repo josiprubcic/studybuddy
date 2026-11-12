@@ -111,9 +111,11 @@ public class PdfToMarkdownConverter {
                 md.append("- ").append(text.substring(1).strip()).append('\n');
                 inList = true;
             } else if (paragraph.length() > 0 && paragraph.charAt(paragraph.length() - 1) == '-'
-                    && Character.isLowerCase(text.charAt(0))) {
-                paragraph.setLength(paragraph.length() - 1); // re-join a word hyphenated across lines
-                paragraph.append(text);
+                    && Character.isLetter(text.charAt(0))) {
+                if (Character.isLowerCase(text.charAt(0))) {
+                    paragraph.setLength(paragraph.length() - 1); // "cel-" + "lular" was one word split by a line break
+                }
+                paragraph.append(text); // "Austro-" + "Ugarska" is a compound: keep the hyphen, no space
             } else {
                 if (paragraph.length() > 0) paragraph.append(' ');
                 paragraph.append(text);

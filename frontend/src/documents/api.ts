@@ -8,6 +8,7 @@ export type DocumentSummary = {
   type: string
   createdAt: string
   chunkCount: number
+  cardCount: number
 }
 
 export type Chunk = {
@@ -21,6 +22,9 @@ export type DocumentDetail = Omit<DocumentSummary, 'chunkCount'> & {
   markdown: string
   chunks: Chunk[]
 }
+
+/** Remembers the last opened material so the dashboard can offer "Nastavi". */
+export const LAST_DOCUMENT_KEY = 'studybuddy.lastDocument'
 
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024 // same as spring.servlet.multipart.max-file-size
 

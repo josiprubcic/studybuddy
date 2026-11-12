@@ -11,7 +11,8 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     @Query("""
             select new com.ssz.studybuddy.document.DocumentSummary(
                 d.id, d.name, d.type, d.createdAt,
-                (select count(c) from Chunk c where c.documentId = d.id))
+                (select count(c) from Chunk c where c.documentId = d.id),
+                (select count(k) from Card k, Chunk kc where k.chunkId = kc.id and kc.documentId = d.id))
             from Document d
             where d.userId = :userId
             order by d.createdAt desc, d.id desc""")

@@ -27,6 +27,7 @@ class PdfToMarkdownConverterTest {
         assertTrue(md.contains("They have two membranes:\n\n- Outer membrane\n- Inner membrane\n\n"), md);
         assertTrue(md.contains("folded into cristae, which increases its surface."), md);
         assertFalse(md.contains("\n1\n"), "page number should be dropped: " + md);
+        assertTrue(md.contains("The Treaty of Brest-Litovsk ended the war"), "compound kept with its hyphen: " + md);
     }
 
     @Test
@@ -55,7 +56,9 @@ class PdfToMarkdownConverterTest {
                 y = line(cs, regular, 11, "• Outer membrane", y, 3);
                 y = line(cs, regular, 11, "• Inner membrane", y, 16);
                 y = line(cs, regular, 11, "The inner membrane is folded into cristae, which increases", y, 3);
-                y = line(cs, regular, 11, "its surface.", y, 3);
+                y = line(cs, regular, 11, "its surface.", y, 16);
+                y = line(cs, regular, 11, "The Treaty of Brest-", y, 3);
+                y = line(cs, regular, 11, "Litovsk ended the war in the east.", y, 3);
                 line(cs, regular, 9, "1", 60, 0);
             }
             doc.save(out);

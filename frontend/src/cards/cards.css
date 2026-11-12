@@ -292,3 +292,15 @@
   flex: none;
   font-weight: 800;
 }
+
+/* One action row per card: reveal on the left, edit/delete on the right */
+.cards-panel .cards-row {
+  justify-content: space-between;
+  margin-left: -16px;
+  margin-right: -12px;
+}
+
+.cards-panel .cards-row-end {
+  display: flex;
+  gap: 4px;
+}

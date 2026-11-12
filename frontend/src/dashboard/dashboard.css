@@ -1,0 +1,344 @@
+/* Dashboard ("Početna"). Tokens from index.css / DESIGN.md only. Visited many times a day: no entrance motion. */
+
+.dash {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 16px 64px;
+}
+
+.dash-head {
+  margin-bottom: 20px;
+}
+
+.dash-head h1 {
+  font-size: clamp(1.75rem, 3.4vw, 2.25rem);
+}
+
+.dash-date {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.dash-date::first-letter {
+  text-transform: uppercase;
+}
+
+/* The learning flow from product.md §4: one connected path, not four boxes */
+
+.dash-flow ol {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.dash-flow li + li {
+  border-left: 1px solid var(--border);
+}
+
+.dash-flow-step {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  min-height: 64px;
+  padding: 12px 16px 12px 40px;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* the step's dot */
+.dash-flow-step::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 17px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+.dash-flow .is-soon .dash-flow-step::before {
+  background: var(--surface);
+  border: 2px solid var(--border-strong);
+  box-shadow: none;
+}
+
+.dash-flow-name {
+  font: 800 1rem/1.2 var(--font-heading);
+}
+
+.dash-flow-status {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.dash-flow .is-soon .dash-flow-name {
+  color: var(--text-muted);
+}
+
+a.dash-flow-step {
+  transition: background-color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.dash-flow-step:hover {
+    background: var(--primary-soft);
+  }
+}
+
+/* Panels */
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  grid-template-areas:
+    'practice focus'
+    'study soon';
+  gap: 20px;
+  align-items: start;
+}
+
+.dash-practice { grid-area: practice; }
+.dash-focus { grid-area: focus; }
+.dash-study { grid-area: study; }
+.dash-soon { grid-area: soon; }
+
+.dash-panel {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  min-width: 0;
+  scroll-margin-top: 84px; /* clear the sticky bar when jumped to from the flow */
+}
+
+.dash-panel h2 {
+  font-size: 1.25rem;
+  margin-bottom: 4px;
+}
+
+.dash-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dash-muted {
+  margin: 0 0 12px;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.dash-link {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  text-decoration: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dash-link:hover {
+    text-decoration: underline;
+  }
+}
+
+.dash-empty p {
+  margin: 4px 0 16px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  max-width: 44ch;
+}
+
+.dash-empty .button,
+.dash-practice-cta {
+  text-decoration: none;
+}
+
+/* Practice: the main panel */
+
+.dash-big {
+  margin: 8px 0 0;
+  font: 700 1.125rem/1.1 var(--font-heading);
+  color: var(--text-muted);
+}
+
+.dash-big strong {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  margin-right: 4px;
+}
+
+.dash-practice-cta {
+  width: 100%;
+  min-height: 52px;
+  margin: 4px 0 20px;
+  font-size: 1.0625rem;
+}
+
+/* Rows (materials with counts) */
+
+.dash-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+
+.dash-list li {
+  border-bottom: 1px solid var(--border);
+}
+
+.dash-row:active,
+a.dash-flow-step:active {
+  transform: scale(0.98);
+}
+
+.dash-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 8px 4px;
+  color: var(--text);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition:
+    background-color 150ms ease,
+    transform var(--dur-press) var(--ease-out);
+}
+
+.dash-row .icon {
+  color: var(--text-soft);
+}
+
+.dash-row-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dash-row-meta {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dash-row:hover {
+    background: var(--surface-sunken);
+  }
+  .dash-row:hover .icon {
+    color: var(--primary);
+  }
+}
+
+/* Study: continue where you left off */
+
+.dash-continue {
+  display: grid;
+  gap: 2px;
+  margin: 12px 0 8px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--primary-soft);
+  color: var(--text);
+  text-decoration: none;
+  transition: transform var(--dur-press) var(--ease-out);
+}
+
+.dash-continue:active {
+  transform: scale(0.99);
+}
+
+.dash-continue-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--primary-hover);
+}
+
+.dash-continue-name {
+  font: 800 1.0625rem/1.3 var(--font-heading);
+  overflow-wrap: anywhere;
+}
+
+/* Focus: the timer is the panel's content, not a card inside a card */
+
+.dash-focus {
+  container-type: inline-size;
+}
+
+.dash-focus .pomodoro {
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background: none;
+}
+
+/* Coming soon: quiet, honest */
+
+.dash-soon {
+  background: var(--surface-sunken);
+  box-shadow: none;
+}
+
+.dash-soon ul {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.dash-soon li {
+  display: grid;
+  gap: 2px;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.dash-soon strong {
+  font-family: var(--font-heading);
+  color: var(--text);
+}
+
+@media (max-width: 860px) {
+  .dash-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'practice' 'focus' 'study' 'soon';
+  }
+}
+
+@media (max-width: 620px) {
+  .dash-flow ol {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dash-flow li:nth-child(3) {
+    border-left: none;
+  }
+  .dash-flow li:nth-child(n + 3) {
+    border-top: 1px solid var(--border);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-continue:active {
+    transform: none;
+  }
+}

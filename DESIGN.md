@@ -63,6 +63,7 @@ Colour does not make anyone smarter on its own. What the research supports, and 
 | `--motivation` / `--motivation-soft` | `#92400E` / `#FEF3C7` | Streaks, points, celebrations (6.4:1) |
 | `--motivation-fill` | `#F59E0B` | Icons and progress fills only — never text |
 | `--highlight` | `#FDE68A` | Highlighted term / citation / marked mistake (text 14:1) |
+| `--tomato` / `--tomato-skin` / `--tomato-ring` / `--tomato-leaf` | `#E5484D` / `#FDECEC` / `#C2373C` / `#2F8F4E` | **Pomodoro tomato illustration only** (dark: `#F0646A` / `#3B2224` / `#F0646A` / `#4ADE80`). The one sanctioned red outside wrong answers: it is a drawn object, never text, a button or a state |
 
 ### Dark (follows OS)
 | Token | Value |
@@ -181,6 +182,23 @@ Combines Anki's one-card-at-a-time review, RemNote's progress bar and source con
 - Before the answer: one full-width primary "Prikaži odgovor" and the hint to recall first. After: four ratings — **Ponovo** (set apart, `--danger` label), **Teško · Dobro · Lako** grouped; each with a short meaning ("nisam se sjetio", "s mukom", "sjetio sam se", "odmah"). "Dobro" is softly preselected (`--primary-soft`). No interval hints until scheduling exists.
 - Keyboard: Space/Enter reveal, 1–4 rate, Escape closes; focus returns to "Vježbaj". A card rated Ponovo returns after three other cards in the same session.
 - End screen: `--success` check, counts (znao / s mukom / ponavljanja), encouragement callout, "Vježbaj ponovno" + "Natrag na kartice".
+
+### Pomodoro timer
+Lives in the materials page header; a compact version (tomato + time) sits in the study session bar while a block runs or is paused.
+- **The tomato is the timer face:** a drawn tomato (green calyx and stalk) that ripens as the block runs — tomato red fills from the bottom during focus, `--success` green during a break. Decorative (`aria-hidden`); the time is text in a `role="timer"`.
+- **Today's finished focus blocks** show as a row of small tomatoes ("Danas 🍅🍅🍅", drawn SVG, max 6 then "+N").
+- Phases are **Fokus** and **Odmor** (never "Pauza", which would clash with pausing). Controls: Kreni / Zaustavi / Nastavi (primary), Ispočetka, Preskoči na odmor, and the "25 + 5 min" link that opens the length settings (focus 1–90, break 1–30, only while idle).
+- A soft two-note chime and a polite announcement when a block ends; the tab title shows the countdown while running. Blocks are saved to `/api/focus-sessions` once, even with several tabs open.
+
+### App shell and navigation
+A solid top bar (no glass): wordmark, **Početna** and **Materijali** (the current page has a 3px `--primary` bar under its label, no motion: navigation happens many times a day), and the running Pomodoro mini timer on the right outside the dashboard. A skip link leads to the content. Routes: `/` dashboard, `/materijali?d=<id>` opens a material.
+
+### Dashboard ("Početna")
+Mirrors product.md §4, the learning flow:
+- **Greeting** by time of day + the date.
+- **Tok učenja:** one connected strip Planiraj → Prouči → Vježbaj → Ponovi; live steps have a filled `--primary` dot and a count, unbuilt steps a hollow dot and "uskoro". Never invented numbers.
+- **Panels** (left: Vježbaj, Prouči · right: Fokus, Uskoro): Vježbaj leads with the card count and "Vježbaj sve" (a study session over every card); Prouči offers "Nastavi gdje si stao" (last opened material) and recent materials; Fokus holds the Pomodoro timer without its own frame (no card inside a card); Uskoro is a quiet `--surface-sunken` list of what product.md plans next.
+- No entrance motion (visited many times a day). Rows and links press with `scale(0.98)`.
 
 ### Browser surfaces
 Text selection uses `--highlight`; `accent-color` and the scrollbar follow the palette; links use `--primary-hover` with a 0.2em underline offset.

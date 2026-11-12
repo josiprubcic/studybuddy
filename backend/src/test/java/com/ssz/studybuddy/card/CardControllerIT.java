@@ -78,6 +78,13 @@ class CardControllerIT {
                 .andReturn().getResponse().getContentAsString();
         long cardId = Long.parseLong(list.replaceAll("^\\[\\{\"id\":(\\d+).*", "$1"));
 
+        // the materials list carries each document's card count, and all cards are listed across documents
+        mvc.perform(get("/api/documents"))
+                .andExpect(jsonPath("$[?(@.id == " + doc + ")].cardCount").value(3));
+        mvc.perform(get("/api/cards"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.id == " + cardId + ")].question").exists());
+
         mvc.perform(put("/api/cards/{id}", cardId).contentType(MediaType.APPLICATION_JSON)
                         .content("{\"question\":\"New Q?\",\"answer\":\"New A\"}"))
                 .andExpect(status().isOk())

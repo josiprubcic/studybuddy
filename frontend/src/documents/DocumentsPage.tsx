@@ -2,10 +2,14 @@ import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'reac
 import { ApiError, isAbort } from '../api/http'
 import { errorMessage } from '../api/errors'
 import CardsPanel from '../cards/CardsPanel'
+import FileName from '../ui/FileName'
+import { prettyName } from '../ui/prettyName'
 import Icon from '../ui/Icon'
+import MarkdownText from '../ui/MarkdownText'
 import {
   getDocument,
   listDocuments,
+  LAST_DOCUMENT_KEY,
   MAX_UPLOAD_BYTES,
   uploadDocument,
   type DocumentDetail,
@@ -16,6 +20,11 @@ const dateFormat = new Intl.DateTimeFormat('hr-HR', { dateStyle: 'medium', timeS
 const plural = new Intl.PluralRules('hr-HR')
 
 // Croatian: 1 cjelina, 2–4 cjeline, 5+ cjelina (21 cjelina, 22 cjeline…)
+function cardWord(n: number) {
+  const c = plural.select(n)
+  return c === 'one' ? 'kartica' : c === 'few' ? 'kartice' : 'kartica'
+}
+
 function chunkWord(n: number) {
   return plural.select(n) === 'few' ? 'cjeline' : 'cjelina'
 }
@@ -47,6 +56,9 @@ export default function DocumentsPage() {
 
   useEffect(() => {
     load()
+    // /materijali?d=12 opens that material (links from the dashboard)
+    const id = Number(new URLSearchParams(window.location.search).get('d'))
+    if (id > 0) open(id)
     return () => openCtl.current?.abort()
   }, [load])
 
@@ -76,7 +88,7 @@ export default function DocumentsPage() {
     try {
       const created = await uploadDocument(file)
       await load()
-      setStatus(`Učitano: ${file.name} (${created.chunkCount} ${chunkWord(created.chunkCount)})`)
+      setStatus(`Učitano: ${prettyName(file.name)} (${created.chunkCount} ${chunkWord(created.chunkCount)})`)
       await open(created.id)
     } catch (err) {
       setStatus('')
@@ -91,6 +103,12 @@ export default function DocumentsPage() {
     const ctl = new AbortController()
     openCtl.current = ctl
     setSelectedId(id)
+    window.history.replaceState(null, '', `/materijali?d=${id}`)
+    try {
+      localStorage.setItem(LAST_DOCUMENT_KEY, String(id))
+    } catch {
+      // storage unavailable: "continue" on the dashboard just won't appear
+    }
     setDetail(null)
     setDetailError(null)
     setDetailLoading(true)
@@ -109,7 +127,7 @@ export default function DocumentsPage() {
   return (
     <main className="page">
       <header className="page-header">
-        <h1>Moji materijali</h1>
+        <h1>Materijali</h1>
         <label className={`button ${uploading ? 'is-busy' : ''}`}>
           {uploading ? 'Obrađujem…' : 'Učitaj PDF'}
           <input
@@ -137,8 +155,8 @@ export default function DocumentsPage() {
 
       <div className="layout">
         <section aria-labelledby="list-title" aria-busy={documents === null && !listError}>
-          <h2 id="list-title" className="section-title">
-            Materijali
+          <h2 id="list-title" className="visually-hidden">
+            Učitani materijali
           </h2>
           {listError ? (
             <>
@@ -172,9 +190,12 @@ export default function DocumentsPage() {
                     onClick={() => open(d.id)}
                     aria-current={selectedId === d.id}
                   >
-                    <span className="doc-name">{d.name}</span>
+                    <span className="doc-name">
+                      <FileName name={d.name} />
+                    </span>
                     <span className="doc-meta">
-                      {d.chunkCount} {chunkWord(d.chunkCount)} · {dateFormat.format(new Date(d.createdAt))}
+                      {d.chunkCount} {chunkWord(d.chunkCount)}
+                      {d.cardCount > 0 && ` · ${d.cardCount} ${cardWord(d.cardCount)}`} · {dateFormat.format(new Date(d.createdAt))}
                     </span>
                   </button>
                 </li>
@@ -187,14 +208,13 @@ export default function DocumentsPage() {
           {detail ? (
             <>
               <h2 id="detail-title" className="section-title" tabIndex={-1} ref={headingRef}>
-                {detail.name}
+                <FileName name={detail.name} />
               </h2>
               <CardsPanel documentId={detail.id} />
               {detail.chunks.map((c) => (
                 <article key={c.id} className="chunk">
                   <h3>{c.heading ?? 'Uvod'}</h3>
-                  {/* shortcut: raw Markdown text; render it with react-markdown when the study view is built */}
-                  <p className="chunk-text">{c.text}</p>
+                  <MarkdownText className="chunk-text" text={c.text} />
                 </article>
               ))}
             </>

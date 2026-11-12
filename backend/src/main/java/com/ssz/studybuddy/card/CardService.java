@@ -62,6 +62,11 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
+    public List<CardResponse> listAll() {
+        return cards.findAllForUser(currentUser.currentUserId());
+    }
+
+    @Transactional(readOnly = true)
     public List<CardResponse> list(Long documentId) {
         Long userId = currentUser.currentUserId();
         documents.findByIdAndUserId(documentId, userId).orElseThrow(() -> new DocumentNotFoundException(documentId));
