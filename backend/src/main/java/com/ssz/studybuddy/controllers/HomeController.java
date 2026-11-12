@@ -1,4 +1,4 @@
-package com.ssz.studybuddy.home;
+package com.ssz.studybuddy.controllers;
 
 
 import org.springframework.web.bind.annotation.GetMapping;
