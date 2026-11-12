@@ -2,6 +2,8 @@ import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent 
 import { isAbort } from '../api/http'
 import { errorMessage } from '../api/errors'
 import { deleteCard, generateCards, listCards, updateCard, type Card } from './api'
+import Icon from '../ui/Icon'
+import StudySession from './StudySession'
 import './cards.css'
 
 const pr = new Intl.PluralRules('hr-HR')
@@ -15,7 +17,9 @@ const sectionsWord = (n: number) => `${n} ${plural(n, 'cjelina', 'cjeline', 'cje
 function ErrorCallout({ message }: { message: string }) {
   return (
     <div className="cards-error" role="alert">
-      <span aria-hidden="true" className="cards-error-icon">✗</span>
+      <span className="cards-error-icon">
+        <Icon name="x" size={18} />
+      </span>
       <span>{message}</span>
     </div>
   )
@@ -185,7 +189,14 @@ export default function CardsPanel({ documentId }: { documentId: number }) {
   const [error, setError] = useState<string | null>(null)
   const [status, setStatus] = useState('')
   const [focusId, setFocusId] = useState<number | 'heading' | null>(null)
+  const [studying, setStudying] = useState(false)
+  const studyBtn = useRef<HTMLButtonElement>(null)
   const controller = useRef<AbortController | null>(null)
+
+  const closeStudy = () => {
+    setStudying(false)
+    requestAnimationFrame(() => studyBtn.current?.focus())
+  }
 
   useEffect(() => {
     const ctl = new AbortController()
@@ -272,9 +283,19 @@ export default function CardsPanel({ documentId }: { documentId: number }) {
             </div>
           ) : (
             <>
-              <p className="cards-muted cards-count">
-                {cardsWord(cards.length)} · {sectionsWord(groups.length)}
-              </p>
+              <div className="cards-practice">
+                <div>
+                  <p className="cards-practice-title">Spremno za vježbu</p>
+                  <p className="cards-muted cards-count">
+                    {cardsWord(cards.length)} · {sectionsWord(groups.length)}
+                  </p>
+                </div>
+                <button ref={studyBtn} type="button" className="button" onClick={() => setStudying(true)}>
+                  Vježbaj
+                  <Icon name="arrowRight" size={20} />
+                </button>
+              </div>
+              {studying && <StudySession cards={cards} onClose={closeStudy} />}
               {groups.map((g) => (
                 <div key={g.chunkId} className="cards-group">
                   <h4>{g.heading}</h4>

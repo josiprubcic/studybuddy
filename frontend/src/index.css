@@ -153,6 +153,28 @@ h3 {
   outline-offset: 2px;
 }
 
+/* Browser surfaces carry the design too */
+::selection {
+  background: var(--highlight);
+  color: var(--highlight-text);
+}
+
+html {
+  accent-color: var(--primary);
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+a {
+  color: var(--primary-hover);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+.icon {
+  flex: none;
+  display: block;
+}
+
 mark {
   background: var(--highlight);
   color: var(--highlight-text);

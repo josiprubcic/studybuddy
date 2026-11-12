@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'reac
 import { ApiError, isAbort } from '../api/http'
 import { errorMessage } from '../api/errors'
 import CardsPanel from '../cards/CardsPanel'
+import Icon from '../ui/Icon'
 import {
   getDocument,
   listDocuments,
@@ -127,8 +128,8 @@ export default function DocumentsPage() {
 
       {error && (
         <div className="callout is-error" role="alert">
-          <span className="callout-icon" aria-hidden="true">
-            ✗
+          <span className="callout-icon">
+            <Icon name="x" size={18} />
           </span>
           <span>{error}</span>
         </div>
@@ -142,9 +143,9 @@ export default function DocumentsPage() {
           {listError ? (
             <>
               <div className="callout is-error" role="alert">
-                <span className="callout-icon" aria-hidden="true">
-                  ✗
-                </span>
+                <span className="callout-icon">
+            <Icon name="x" size={18} />
+          </span>
                 <span>{listError}</span>
               </div>
               <button
@@ -199,9 +200,9 @@ export default function DocumentsPage() {
             </>
           ) : detailError ? (
             <div id="detail-title" className="callout is-error" role="alert">
-              <span className="callout-icon" aria-hidden="true">
-                ✗
-              </span>
+              <span className="callout-icon">
+            <Icon name="x" size={18} />
+          </span>
               <span>{detailError}</span>
             </div>
           ) : detailLoading ? (

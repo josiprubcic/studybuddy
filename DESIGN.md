@@ -168,6 +168,23 @@ Pill-shaped, 13–14px, 4×10px padding. Topic chips use the topic soft/strong p
 ### Messages
 Errors and notices are inline callouts (soft background + icon + text), placed next to what caused them. `role="alert"` for errors.
 
+### Icons
+One authored set in `frontend/src/ui/Icon.tsx`: 24px grid, 2px round stroke, `currentColor`, decorative unless given a label. Never Unicode glyphs or emoji as icons.
+
+### Card list (managing cards)
+One list per section on `--surface` with 1px `--border` dividers between cards — not a box per card. A `--primary-soft` practice bar sits on top: the count ("12 kartica · 5 cjelina") and the panel's one primary action, **Vježbaj**. Answers in the list stay hidden behind "Prikaži odgovor".
+
+### Study session (practising cards)
+Combines Anki's one-card-at-a-time review, RemNote's progress bar and source context, and a tactile index card.
+- Full-screen focus layer (`role="dialog"`), top bar with "Završi" and a `--success` progress bar ("3 / 12").
+- The card: white index card with faint ruled lines, radius 16px, flips with `rotateY` 250ms. Front: the question (fill-ins show a `--primary` blank). Back: the answer, for fill-ins the whole sentence with the term in `<mark>`, plus "Iz tvoje skripte" and the source sentence.
+- Before the answer: one full-width primary "Prikaži odgovor" and the hint to recall first. After: four ratings — **Ponovo** (set apart, `--danger` label), **Teško · Dobro · Lako** grouped; each with a short meaning ("nisam se sjetio", "s mukom", "sjetio sam se", "odmah"). "Dobro" is softly preselected (`--primary-soft`). No interval hints until scheduling exists.
+- Keyboard: Space/Enter reveal, 1–4 rate, Escape closes; focus returns to "Vježbaj". A card rated Ponovo returns after three other cards in the same session.
+- End screen: `--success` check, counts (znao / s mukom / ponavljanja), encouragement callout, "Vježbaj ponovno" + "Natrag na kartice".
+
+### Browser surfaces
+Text selection uses `--highlight`; `accent-color` and the scrollbar follow the palette; links use `--primary-hover` with a 0.2em underline offset.
+
 ---
 
 ## 7. Motion
